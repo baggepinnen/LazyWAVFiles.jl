@@ -4,7 +4,7 @@
 # LazyWAVFiles
 This package let's you treat a wav-file on disk as an `AbstractArray`. Access to the data is lazy, i.e., nothing is read from the file until the array is indexed into. You can also specify a folder containing many wav-files and treat them all as a single large array! This lets you work using files that are too large to fit in memory. Some examples
 ```julia
-using Test, LazyWAVFiles, WAV
+using LazyWAVFiles, WAV
 
 # Create some files to work with
 d   = mktempdir()
