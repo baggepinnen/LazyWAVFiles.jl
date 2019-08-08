@@ -50,7 +50,7 @@ module LazyWAVFiles
 
     function Base.getindex(df::DistributedWAVFile{T,1}, i::Integer) where {T,N}
         cl = cumsum(length.(df.files))
-        fileind = findfirst(>=(i), cl)
+        fileind = findfirst(x->x >= i, cl)
         fileind == 1 ? df.files[fileind][i] : df.files[fileind][i-cl[fileind-1]]
     end
 
