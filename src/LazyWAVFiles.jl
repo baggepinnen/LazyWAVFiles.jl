@@ -72,7 +72,7 @@ module LazyWAVFiles
                 out[outind:end] .= f[i .- (fileinds[1]-1)]
                 return out
             end
-            last_ind_from_file = findlast(<=(fileinds[end]), i) # The last output element we can get from this file
+            last_ind_from_file = findlast(x->x <= (fileinds[end]), i) # The last output element we can get from this file
             outinds = outind:outind+last_ind_from_file-1
             out[outinds] .= f[i[1:last_ind_from_file]]
             i = i[last_ind_from_file+1:end]
