@@ -18,6 +18,7 @@ df = DistributedWAVFile(d)
 @test size(df) == (20,)
 @test length(df) == 20
 @test length(df.files[1]) == 10
+@test length([df; df]) == 40
 @test_nowarn display(df)
 @test_nowarn display(df.files[1])
 

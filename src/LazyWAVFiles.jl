@@ -41,48 +41,19 @@ module LazyWAVFiles
         end
         files = sort(files)
         files = LazyWAVFile.(joinpath.(Ref(folder), files))
+        DistributedWAVFile(files)
+    end
+    function DistributedWAVFile(files)
         lazyarray = Vcat(files...)
         DistributedWAVFile{eltype(files[1]), ndims(files[1]), typeof(lazyarray)}(files, lazyarray)
     end
     Base.length(f::DistributedWAVFile) = sum(length, f.files)
     Base.size(f::DistributedWAVFile{T,N}) where {T,N} = ntuple(i->sum(x->size(x,i), f.files), N)
 
-
     Base.show(io::IO, f::DistributedWAVFile{T,N}) where {T,N} = println(io, "DistributedWAVFile{$T, $N} with $(length(f.files)) files")
 
     Base.getindex(df::DistributedWAVFile, i...) = getindex(df.lazyarray, i...)
 
-    # function Base.getindex(df::DistributedWAVFile{T,1}, i::Integer) where {T,N}
-    #     cl = cumsum(length.(df.files))
-    #     fileind = findfirst(>=(i), cl)
-    #     fileind == 1 ? df.files[fileind][i] : df.files[fileind][i-cl[fileind-1]]
-    # end
-    #
-    # function Base.getindex(df::DistributedWAVFile{T,1}, ::Colon) where {T,N}
-    #     df[1:length(df)]
-    # end
-    #
-    # function Base.getindex(df::DistributedWAVFile{T,1}, i) where {T,N}
-    #     n_elems = length(i)
-    #     out = Vector{T}(undef, n_elems)
-    #     fullind = 1
-    #     outind = 1
-    #     for f in df.files
-    #         l = length(f)
-    #         fileinds = fullind:fullind+l-1
-    #         fullind += l
-    #         i[1] > fileinds[end] && continue # start is in a later file
-    #         if i[end] <= fileinds[end] # We could take the rest of the elements from this file
-    #             out[outind:end] .= f[i .- (fileinds[1]-1)]
-    #             return out
-    #         end
-    #         last_ind_from_file = findlast(<=(fileinds[end]), i) # The last output element we can get from this file
-    #         outinds = outind:outind+last_ind_from_file-1
-    #         out[outinds] .= f[i[1:last_ind_from_file]]
-    #         i = i[last_ind_from_file+1:end]
-    #         outind += length(outinds)
-    #     end
-    #     out
-    # end
+    Base.vcat(dfs::DistributedWAVFile...) = DistributedWAVFile(reduce(vcat, getfield.(dfs, :files)))
 
 end
