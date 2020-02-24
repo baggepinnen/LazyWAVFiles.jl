@@ -28,7 +28,7 @@ Base.getindex(f::LazyWAVFile{T,1}, i::AbstractRange) where {T} = vec(wavread(f.p
 Base.getindex(f::LazyWAVFile{T,2}, i::AbstractRange) where {T} = wavread(f.path, format="native", subrange=i)[1]::Array{T,2}
 
 Base.getindex(f::LazyWAVFile{T,1}, ::Colon) where {T} = vec(wavread(f.path, format="native")[1])::Array{T,1}
-Base.getindex(f::LazyWAVFile{T,2}, ::Colon) where {T} = wavread(f.path, format="native")[1]::Array{T,2}
+Base.getindex(f::LazyWAVFile{T,2}, ::Colon, ::Colon) where {T} = wavread(f.path, format="native")[1]::Array{T,2}
 
 Base.eltype(f::LazyWAVFile{T}) where T = T
 Base.ndims(f::LazyWAVFile{T,N}) where {T,N} = N
@@ -59,7 +59,7 @@ end
 Base.length(f::DistributedWAVFile) = sum(length, f.files)
 Base.size(f::DistributedWAVFile{T,N}) where {T,N} = ntuple(i->sum(x->size(x,i), f.files), N)
 
-Base.show(io::IO, f::DistributedWAVFile{T,N}) where {T,N} = println(io, "DistributedWAVFile{$T, $N} with $(length(f.files)) files")
+Base.show(io::IO, ::MIME"text/plain", f::DistributedWAVFile{T,N}) where {T,N} = println(io, "DistributedWAVFile{$T, $N} with $(length(f.files)) files and $(length(f)) total datapoints")
 
 Base.getindex(df::DistributedWAVFile, i...) = getindex(df.lazyarray, i...)
 

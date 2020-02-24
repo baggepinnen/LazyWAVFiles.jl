@@ -20,6 +20,7 @@ using Test, LazyWAVFiles, WAV
         @test lf[1] == a[1]
         @test lf[1:2] == a[1:2]
         @test lf[1:10] == a
+        @test lf[:] == a
 
     end
 
@@ -28,6 +29,7 @@ using Test, LazyWAVFiles, WAV
         @info "Testing Distributed file"
 
         df = DistributedWAVFile(d)
+        @show df
         @test df[1] == a[1]
         @test df[1:2] == a[1:2]
         @test df[1:10] == a
@@ -58,6 +60,7 @@ using Test, LazyWAVFiles, WAV
         @test lf[1] == a[1]
         @test lf[1,2] == b[1]
         @test lf[1:10] == [a b]
+        @test lf[:,:] == [a b]
     end
 
     @testset "Misc" begin
