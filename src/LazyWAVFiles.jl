@@ -1,6 +1,6 @@
 module LazyWAVFiles
     using WAV, LazyArrays
-    export LazyWAVFile, DistributedWAVFile
+    export LazyWAVFile, DistributedWAVFile, path
     struct LazyWAVFile{T,N,S<:Tuple} <: AbstractArray{T,N}
         path::String
         size::S
@@ -18,6 +18,7 @@ module LazyWAVFiles
     Base.size(f::LazyWAVFile) = f.size
     Base.size(f::LazyWAVFile{T,N},i) where {T,N} = i > N ? 1 : f.size[i]
     Base.length(f::LazyWAVFile) = prod(f.size)
+    path(f::LazyWAVFile) = f.path
 
     Base.getindex(f::LazyWAVFile{T,N}, i::Number) where {T,N} = wavread(f.path, format="native", subrange=i:i)[1][1]::T
     Base.getindex(f::LazyWAVFile{T,1}, i::AbstractRange) where {T} = vec(wavread(f.path, format="native", subrange=i)[1])::Array{T,1}
@@ -37,7 +38,7 @@ module LazyWAVFiles
     end
     function DistributedWAVFile(folder::String)
         files = filter(readdir(folder)) do file
-            file[end-2:end] == "wav"
+            lowercase(file[end-2:end]) == "wav"
         end
         files = sort(files)
         files = LazyWAVFile.(joinpath.(Ref(folder), files))
@@ -55,5 +56,6 @@ module LazyWAVFiles
     Base.getindex(df::DistributedWAVFile, i...) = getindex(df.lazyarray, i...)
 
     Base.vcat(dfs::DistributedWAVFile...) = DistributedWAVFile(reduce(vcat, getfield.(dfs, :files)))
+
 
 end
