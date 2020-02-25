@@ -1,7 +1,7 @@
 name = "LazyWAVFiles"
 uuid = "82ba68a1-f779-4cc2-8f94-53af9af8d852"
 authors = ["Fredrik Bagge Carlson <baggepinnen@gmail.com>"]
-version = "0.1.2"
+version = "0.1.1"
 
 [deps]
 LazyArrays = "5078a376-72f3-5289-bfd5-ec5146d43c02"
