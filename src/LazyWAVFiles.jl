@@ -21,6 +21,10 @@ Base.size(f::LazyWAVFile{T,N},i) where {T,N} = i > N ? 1 : f.size[i]
 Base.length(f::LazyWAVFile) = prod(f.size)
 path(f::LazyWAVFile) = f.path
 
+function Base.copyto!(dst::SubArray{T,N,Array{T,N},Tuple{UnitRange{Int64}}}, sa::SubArray{T,N,<:LazyWAVFile{T,N}}) where {T,N}
+    copyto!(dst, sa.parent[sa.indices...])
+end
+
 Base.getindex(f::LazyWAVFile{T,N}, i::Number) where {T,N} = wavread(f.path, format="native", subrange=i:i)[1][1]::T
 
 Base.getindex(f::LazyWAVFile{T,N}, i,j) where {T,N} = wavread(f.path, format="native", subrange=i:i)[1][j]
