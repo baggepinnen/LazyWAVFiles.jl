@@ -1,3 +1,32 @@
+"""
+Treat WAV files as lazy arrays stored on disk.
+
+Documentation: https://github.com/baggepinnen/LazyWAVFiles.jl
+
+## Quick start
+### LazyWAVFile
+```
+f1 = LazyWAVFile(joinpath(d,"f1.wav"))
+f1[1]
+f1[1:5]
+size(f1)
+f1.fs # Get the sample rate
+
+[f1; f2] # Creates a `DistributedWAVFile`
+```
+
+### DistributedWAVFile
+```
+df = DistributedWAVFile(folder_path)
+df[1]
+df[1:12]
+df[:]
+
+size(df) # Other array functions are defined as well
+length(df)
+df.fs    # Get the sample rate
+```
+"""
 module LazyWAVFiles
 using WAV, LazyArrays
 export LazyWAVFile, DistributedWAVFile, path
