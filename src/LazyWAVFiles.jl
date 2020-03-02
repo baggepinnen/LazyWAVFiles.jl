@@ -25,14 +25,15 @@ function Base.copyto!(dst::SubArray{T,N,Array{T,N},Tuple{UnitRange{Int64}}}, sa:
     copyto!(dst, sa.parent[sa.indices...])
 end
 
-Base.getindex(f::LazyWAVFile{T,N}, i::Number) where {T,N} = wavread(f.path, format="native", subrange=i:i)[1][1]::T
+Base.getindex(f::LazyWAVFile{T,N}, i::Integer) where {T,N} = wavread(f.path, format="native", subrange=i:i)[1][1]::T
 
-Base.getindex(f::LazyWAVFile{T,N}, i,j) where {T,N} = wavread(f.path, format="native", subrange=i:i)[1][j]
+Base.getindex(f::LazyWAVFile{T,N}, i::Integer,j) where {T,N} = wavread(f.path, format="native", subrange=i:i)[1][j]
+Base.getindex(f::LazyWAVFile{T,N}, i,j) where {T,N} = wavread(f.path, format="native", subrange=i)[1][:,j]
 Base.getindex(f::LazyWAVFile{T,1}, i::AbstractRange) where {T} = vec(wavread(f.path, format="native", subrange=i)[1])::Array{T,1}
-Base.getindex(f::LazyWAVFile{T,2}, i::AbstractRange) where {T} = wavread(f.path, format="native", subrange=i)[1]::Array{T,2}
+Base.getindex(f::LazyWAVFile{T,N}, i::AbstractRange) where {T,N} = wavread(f.path, format="native", subrange=i)[1]::Array{T,2}
 
 Base.getindex(f::LazyWAVFile{T,1}, ::Colon) where {T} = vec(wavread(f.path, format="native")[1])::Array{T,1}
-Base.getindex(f::LazyWAVFile{T,2}, ::Colon, ::Colon) where {T} = wavread(f.path, format="native")[1]::Array{T,2}
+Base.getindex(f::LazyWAVFile{T,N}, ::Colon, ::Colon) where {T,N} = wavread(f.path, format="native")[1]::Array{T,2}
 
 Base.eltype(f::LazyWAVFile{T}) where T = T
 Base.ndims(f::LazyWAVFile{T,N}) where {T,N} = N

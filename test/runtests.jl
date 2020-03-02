@@ -5,7 +5,7 @@ using Test, LazyWAVFiles, WAV
     @info "Testing LazyWAVFiles"
 
     d = mktempdir()
-    a,b = randn(Float32,10), randn(Float32,10)
+    a,b,c = randn(Float32,10), randn(Float32,10), randn(Float32,10)
     WAV.wavwrite(a, joinpath(d,"f1.wav"), Fs=8000)
     WAV.wavwrite(b, joinpath(d,"f2.wav"), Fs=8000)
     p1 = joinpath(d,"f1.wav")
@@ -59,8 +59,26 @@ using Test, LazyWAVFiles, WAV
         @test path(lf) == p3
         @test lf[1] == a[1]
         @test lf[1,2] == b[1]
+        @test lf[:,1] == a
+        @test lf[:,2] == b
         @test lf[1:10] == [a b]
         @test lf[:,:] == [a b]
+
+        WAV.wavwrite([a b c], joinpath(d,"f4.wav"), Fs=8000)
+        p4 = joinpath(d,"f4.wav")
+        lf = LazyWAVFile(p4)
+        @test size(lf) == (10,3)
+        @test path(lf) == p4
+        @test lf[1] == a[1]
+        @test lf[1,2] == b[1]
+        @test lf[1,3] == c[1]
+        @test lf[:,1] == a
+        @test lf[:,2] == b
+        @test lf[:,3] == c
+        @test lf[1:10] == [a b c]
+        @test lf[:,:] == [a b c]
+        @test lf[1,:] == [a[1], b[1], c[1]]
+
     end
 
     @testset "Misc" begin
