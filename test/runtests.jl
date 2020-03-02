@@ -15,6 +15,7 @@ using Test, LazyWAVFiles, WAV
         @info "Testing One file, one channel"
 
         lf = LazyWAVFile(p1)
+        @test lf.fs == 8000
         @test size(lf) == (10,)
         @test path(lf) == p1
         @test lf[1] == a[1]
@@ -30,6 +31,7 @@ using Test, LazyWAVFiles, WAV
 
         df = DistributedWAVFile(d)
         @show df
+        @test df.fs == 8000
         @test df[1] == a[1]
         @test df[1:2] == a[1:2]
         @test df[1:10] == a
@@ -55,6 +57,7 @@ using Test, LazyWAVFiles, WAV
         WAV.wavwrite([a b], joinpath(d,"f3.wav"), Fs=8000)
         p3 = joinpath(d,"f3.wav")
         lf = LazyWAVFile(p3)
+        @test lf.fs == 8000
         @test size(lf) == (10,2)
         @test path(lf) == p3
         @test lf[1] == a[1]
@@ -67,6 +70,7 @@ using Test, LazyWAVFiles, WAV
         WAV.wavwrite([a b c], joinpath(d,"f4.wav"), Fs=8000)
         p4 = joinpath(d,"f4.wav")
         lf = LazyWAVFile(p4)
+        @test lf.fs == 8000
         @test size(lf) == (10,3)
         @test path(lf) == p4
         @test lf[1] == a[1]
@@ -87,6 +91,10 @@ using Test, LazyWAVFiles, WAV
         @info "The following error message is intentional"
         @test_throws MethodError DistributedWAVFile(d)
 
+        d = mktempdir()
+        WAV.wavwrite(a, joinpath(d,"fs800.wav"), Fs=800)
+        WAV.wavwrite(a, joinpath(d,"fs8000.wav"), Fs=8000)
+        @test_throws ErrorException DistributedWAVFile(d)
     end
 
 

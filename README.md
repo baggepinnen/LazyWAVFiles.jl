@@ -17,6 +17,7 @@ f1 = LazyWAVFile(joinpath(d,"f1.wav"))
 f1[1]   == a[1]
 f1[1:5] == a[1:5]
 size(f1)
+f1.fs == 8000
 
 # We can create an array from all files in a folder
 df = DistributedWAVFile(d)
@@ -26,6 +27,7 @@ df[:]    == [a;b]       # Or load all files as one long vector
 
 size(df) # Other array functions are defined as well
 length(df)
+df.fs == 8000
 
 # To work using chunks of the entire distributed array, we can use Iterators.partition
 julia> Iterators.partition(df, 2) |> collect
