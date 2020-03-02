@@ -9,6 +9,7 @@ using Test, LazyWAVFiles, WAV
     WAV.wavwrite(a, joinpath(d,"f1.wav"), Fs=8000)
     WAV.wavwrite(b, joinpath(d,"f2.wav"), Fs=8000)
     p1 = joinpath(d,"f1.wav")
+    p2 = joinpath(d,"f2.wav")
 
 
     @testset "One file, one channel" begin
@@ -22,6 +23,11 @@ using Test, LazyWAVFiles, WAV
         @test lf[1:2] == a[1:2]
         @test lf[1:10] == a
         @test lf[:] == a
+
+        lf2 = LazyWAVFile(p2)
+        df = [lf; lf2]
+        @test df isa DistributedWAVFile
+        @test size(df) == (20,)
 
     end
 
@@ -47,8 +53,8 @@ using Test, LazyWAVFiles, WAV
         @test length([df; df]) == 40
         @test_nowarn display(df)
         @test_nowarn display(df.files[1])
-
         @test ndims(df.files[1]) == 1
+
     end
 
     @testset "Multiple channels" begin

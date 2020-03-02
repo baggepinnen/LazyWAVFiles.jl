@@ -76,6 +76,13 @@ Base.show(io::IO, ::MIME"text/plain", f::DistributedWAVFile{T,N}) where {T,N} = 
 
 Base.getindex(df::DistributedWAVFile, i...) = getindex(df.lazyarray, i...)
 
+
+function Base.vcat(lfs::LazyWAVFile...)
+    fs = lfs[1].fs
+    any(x->x.fs != fs, lfs) && error("Concatenated WAV files have different sample rates.")
+    DistributedWAVFile([lfs...], fs)
+end
+
 function Base.vcat(dfs::DistributedWAVFile...)
     fs = dfs[1].fs
     any(x->x.fs != fs, dfs) && error("Distributed WAV files have different sample rates.")
