@@ -46,4 +46,9 @@ julia> Iterators.partition(df, 2) |> collect
 
 
 ### Notes
-- Creating a distributed file based on a folder with a really large number of files can take a while due to the size of each audio clip being read from each file. The size information is required in order to have the files appear as one large array. 
+- Creating a distributed file based on a folder with a really large number of files can take a while due to the size of each audio clip being read from each file. The size information is required in order to have the files appear as one large array. As an example:
+```julia
+julia> @time df = DistributedWAVFile("folder_with_21551_files/")
+ 25.518655 seconds (2.47 M allocations: 144.085 MiB, 0.18% gc time)
+ DistributedWAVFile{Float32, 1} with 21551 files, 657735677 total datapoints and samplerate 44100.0
+```
