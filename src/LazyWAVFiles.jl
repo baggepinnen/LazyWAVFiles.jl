@@ -89,8 +89,8 @@ function DistributedWAVFile(folder::String)
     end
     DistributedWAVFile(files,fs0)
 end
-function DistributedWAVFile(files,fs)
-    lazyarray = Vcat(files...)
+function DistributedWAVFile(files::AbstractVector{L},fs) where L <: LazyWAVFile{T,N} where {T,N}
+    lazyarray = ApplyArray{T, N, typeof(vcat), NTuple{length(files),L}}(vcat, NTuple{length(files),L}(ntuple(i->files[i],length(files))))
     try
         return DistributedWAVFile{eltype(files[1]), ndims(files[1]), typeof(lazyarray), typeof(fs)}(files, lazyarray, fs)
     catch e
