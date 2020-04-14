@@ -24,6 +24,18 @@ using Test, LazyWAVFiles, WAV
         @test lf[1:10] == a
         @test lf[:] == a
 
+        dst = zeros(Float32, 10)
+        copyto!(dst, a)
+        @test dst == a
+
+        dst = zeros(Float32, 10)
+        @views copyto!(dst[1:10], a[1:10])
+        @test dst == a
+
+        dst = zeros(Float32, 10)
+        copyto!(dst,1, a, 1, 10)
+        @test dst == a
+
         lf2 = LazyWAVFile(p2)
         df = [lf; lf2]
         @test df isa DistributedWAVFile
