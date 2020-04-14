@@ -56,6 +56,10 @@ function Base.copyto!(dst::SubArray{T,N,Array{T,N},Tuple{UnitRange{Int64}}}, sa:
     copyto!(dst, sa.parent[sa.indices...])
 end
 
+function Base.copyto!(dst::AbstractArray, rd::Int, src::LazyWAVFile, rs::Int, N::Int)
+    dst[rd:rd+N-1] .= src[rs:rs+N-1]
+end
+
 Base.getindex(f::LazyWAVFile{T,N}, i::Integer) where {T,N} = wavread(f.path, format="native", subrange=i:i)[1][1]::T
 
 Base.getindex(f::LazyWAVFile{T,N}, i::Integer,j) where {T,N} = wavread(f.path, format="native", subrange=i:i)[1][j]
