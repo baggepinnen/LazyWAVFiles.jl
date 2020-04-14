@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/baggepinnen/LazyWAVFiles.jl.svg?branch=master)](https://travis-ci.org/baggepinnen/LazyWAVFiles.jl)
+[![CI](https://github.com/baggepinnen/LazyWAVFiles.jl/workflows/CI/badge.svg)](https://github.com/baggepinnen/LazyWAVFiles.jl/actions)
 [![codecov](https://codecov.io/gh/baggepinnen/LazyWAVFiles.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/baggepinnen/LazyWAVFiles.jl)
 
 # LazyWAVFiles
