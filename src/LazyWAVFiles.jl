@@ -28,7 +28,7 @@ df.fs    # Get the sample rate
 ```
 """
 module LazyWAVFiles
-using WAV, LazyArrays
+using WAV, BlockArrays
 export LazyWAVFile, DistributedWAVFile, path
 
 struct LazyWAVFile{T,N,FS,S<:Tuple} <: AbstractArray{T,N}
@@ -77,7 +77,7 @@ Base.show(io::IO, f::LazyWAVFile{T,N,S}) where {T,N,S} = println(io, "LazyWAV{$T
 
 struct DistributedWAVFile{T,N,L,FS} <: AbstractArray{T,N}
     files::Vector{LazyWAVFile{T,N,FS}}
-    lazyarray::L
+    blockarray::L
     fs::FS
 end
 function DistributedWAVFile(folder::String)
@@ -94,9 +94,9 @@ function DistributedWAVFile(folder::String)
     DistributedWAVFile(files,fs0)
 end
 function DistributedWAVFile(files::AbstractVector{L},fs) where L <: LazyWAVFile{T,N} where {T,N}
-    lazyarray = ApplyArray{T, N, typeof(vcat), NTuple{length(files),L}}(vcat, NTuple{length(files),L}(ntuple(i->files[i],length(files))))
+    blockarray = mortar(files)
     try
-        return DistributedWAVFile{eltype(files[1]), ndims(files[1]), typeof(lazyarray), typeof(fs)}(files, lazyarray, fs)
+        return DistributedWAVFile{eltype(files[1]), ndims(files[1]), typeof(blockarray), typeof(fs)}(files, blockarray, fs)
     catch e
         @error "Creating distributed WAV file failed. This can happen if the wav-files in the folder have different number of channels."
         rethrow(e)
@@ -107,8 +107,31 @@ Base.size(f::DistributedWAVFile{T,N}) where {T,N} = ntuple(i->sum(x->size(x,i), 
 
 Base.show(io::IO, ::MIME"text/plain", f::DistributedWAVFile{T,N}) where {T,N} = println(io, "DistributedWAVFile{$T, $N} with $(length(f.files)) files, $(length(f)) total datapoints and samplerate $(f.fs)")
 
-Base.getindex(df::DistributedWAVFile, i...) = getindex(df.lazyarray, i...)
+function blockindexranges(bindices::Vector{BlockIndex{1}})
+    blks = unique([Block(bindex.I) for bindex in bindices])
+    biranges = BlockArrays.BlockIndexRange{1,Tuple{UnitRange{Int}}}[]
+    for blk in blks
+        bindicesindices = findall(x -> Block(x.I)==blk, bindices)
+        a = [bindex.α[1] for bindex in bindices[bindicesindices]]
+        push!(biranges, blk[a[1]:a[end]])
+    end
+    biranges
+end
 
+function Base.getindex(blockarray::BlockVector{T}, indices::UnitRange{Int}) where T
+    bindices = findblockindex.(axes(blockarray), indices)
+    biranges = blockindexranges(bindices)
+    x = Vector{eltype(blockarray)}(undef, length(indices))
+    startind = 1
+    for birange in biranges
+        stopind = startind+length(birange)-1
+        x[startind:stopind] = blockarray[birange]
+        startind = stopind+1
+    end
+    x
+end
+
+Base.getindex(df::DistributedWAVFile, i...) = getindex(df.blockarray, i...)
 
 function Base.vcat(lfs::LazyWAVFile...)
     fs = lfs[1].fs
