@@ -108,12 +108,12 @@ Base.size(f::DistributedWAVFile{T,N}) where {T,N} = ntuple(i->sum(x->size(x,i), 
 Base.show(io::IO, ::MIME"text/plain", f::DistributedWAVFile{T,N}) where {T,N} = println(io, "DistributedWAVFile{$T, $N} with $(length(f.files)) files, $(length(f)) total datapoints and samplerate $(f.fs)")
 
 function blockindexranges(bindices::Vector{BlockIndex{1}})
-    blks = unique([Block(bindex.I) for bindex in bindices])
+    indices = first.((x->x.I).(bindices))
+    blks = unique(indices)
     biranges = BlockArrays.BlockIndexRange{1,Tuple{UnitRange{Int}}}[]
     for blk in blks
-        bindicesindices = findall(x -> Block(x.I)==blk, bindices)
-        a = [bindex.α[1] for bindex in bindices[bindicesindices]]
-        push!(biranges, blk[a[1]:a[end]])
+        bindicesindices = (indices .== blk)
+        push!(biranges, Block(blk)[bindices[bindicesindices][1].α[1]:bindices[bindicesindices][end].α[1]])
     end
     biranges
 end
