@@ -44,7 +44,7 @@ function LazyWAVFile(path)
     if dim == 1
         s = (s[1],)
     end
-    LazyWAVFile{T,dim,typeof(fs),typeof(s)}(path, s, fs)
+    LazyWAVFile{T,length(s),typeof(fs),typeof(s)}(path, s, fs)
 end
 
 Base.size(f::LazyWAVFile) = f.size
@@ -74,7 +74,7 @@ Base.getindex(f::LazyWAVFile{T,N}, ::Colon, ::Colon) where {T,N} = wavread(f.pat
 
 Base.eltype(f::LazyWAVFile{T}) where T = T
 Base.ndims(f::LazyWAVFile{T,N}) where {T,N} = N
-Base.show(io::IO, f::LazyWAVFile{T,N,S}) where {T,N,S} = println(io, "LazyWAV{$T, $N, $(f.size), fs=$(f.fs)}: ", f.path)
+Base.show(io::IO, ::MIME"text/plain", f::LazyWAVFile{T,N,S}) where {T,N,S} = println(io, "LazyWAV{$T, $N, $(f.size), fs=$(f.fs)}: ", f.path)
 
 
 struct DistributedWAVFile{T,N,L,FS} <: AbstractArray{T,N}
