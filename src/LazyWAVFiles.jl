@@ -62,7 +62,9 @@ end
 
 Base.getindex(f::LazyWAVFile{T,N}, i::Integer) where {T,N} = wavread(f.path, format="native", subrange=i:i)[1][1]::T
 
-Base.getindex(f::LazyWAVFile{T,N}, i::Integer,j) where {T,N} = wavread(f.path, format="native", subrange=i:i)[1][j]
+Base.getindex(f::LazyWAVFile{T,N}, i::Integer,j::Integer) where {T,N} = wavread(f.path, format="native", subrange=i:i)[1][j]::T
+Base.getindex(f::LazyWAVFile{T,N}, i::Integer,j::Union{Colon,AbstractRange}) where {T,N} = wavread(f.path, format="native", subrange=i:i)[1][1,j]::Array{T,1}
+Base.getindex(f::LazyWAVFile{T,N}, i::Union{Colon,AbstractRange},j::Integer) where {T,N} = wavread(f.path, format="native", subrange=i)[1][:,j]::Array{T,1}
 Base.getindex(f::LazyWAVFile{T,N}, i,j) where {T,N} = wavread(f.path, format="native", subrange=i)[1][:,j]
 Base.getindex(f::LazyWAVFile{T,1}, i::AbstractRange) where {T} = vec(wavread(f.path, format="native", subrange=i)[1])::Array{T,1}
 Base.getindex(f::LazyWAVFile{T,N}, i::AbstractRange) where {T,N} = wavread(f.path, format="native", subrange=i)[1]::Array{T,2}
