@@ -107,6 +107,19 @@ using Test, LazyWAVFiles, WAV, BenchmarkTools
         @test @inferred(lf[:,:]) == [a b c]
         @test @inferred(lf[1,:]) == [a[1], b[1], c[1]]
 
+        d2 = mktempdir()
+        WAV.wavwrite([a b], joinpath(d2,"f5.wav"), Fs=8000)
+        WAV.wavwrite([a b], joinpath(d2,"f6.wav"), Fs=8000)
+        df = DistributedWAVFile(d2)
+        @test df.fs == 8000
+        @test size(df) == (20,2)
+        @test @inferred(df[1]) == a[1]
+        @test @inferred(df[1,2]) == b[1]
+        @test @inferred(df[:,1]) == vcat(a, a)
+        @test @inferred(df[:,2]) == vcat(b, b)
+        @test @inferred(df[:,:]) == vcat([a b], [a b])
+        @inferred(df[10:12,1]) == vcat(a[10:10], a[1:2])
+
     end
 
     @testset "Misc" begin
