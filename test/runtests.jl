@@ -139,8 +139,6 @@ using Test, LazyWAVFiles, WAV, BenchmarkTools
     @testset "Benchmarks" begin
         @info "Testing Benchmarks"
 
-
-
         path = mktempdir()
         y = sin.((0:99999999)/48000*2pi*440);
         wavwrite(y, joinpath(path, "test1.wav"), Fs=48000)
