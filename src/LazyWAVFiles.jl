@@ -96,7 +96,7 @@ function DistributedWAVFile(folder::String)
     DistributedWAVFile(files,fs0)
 end
 function DistributedWAVFile(files::AbstractVector{L},fs) where L <: LazyWAVFile{T,N} where {T,N}
-    blockarray = mortar(files)
+    blockarray = N == 1 ? mortar(files) : mortar(reshape(files, (length(files), 1)))
     try
         return DistributedWAVFile{eltype(files[1]), ndims(files[1]), typeof(blockarray), typeof(fs)}(files, blockarray, fs)
     catch e
@@ -105,7 +105,7 @@ function DistributedWAVFile(files::AbstractVector{L},fs) where L <: LazyWAVFile{
     end
 end
 Base.length(f::DistributedWAVFile) = sum(length, f.files)
-Base.size(f::DistributedWAVFile{T,N}) where {T,N} = ntuple(i->sum(x->size(x,i), f.files), N)
+Base.size(f::DistributedWAVFile{T,N}) where {T,N} = size(f.blockarray)
 
 Base.show(io::IO, ::MIME"text/plain", f::DistributedWAVFile{T,N}) where {T,N} = println(io, "DistributedWAVFile{$T, $N} with $(length(f.files)) files, $(length(f)) total datapoints and samplerate $(f.fs)")
 
