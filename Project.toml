@@ -1,7 +1,7 @@
 name = "LazyWAVFiles"
 uuid = "82ba68a1-f779-4cc2-8f94-53af9af8d852"
 authors = ["Fredrik Bagge Carlson <baggepinnen@gmail.com>"]
-version = "1.0.1"
+version = "2.0.0"
 
 [deps]
 BlockArrays = "8e7c35d0-a365-5155-bbbb-fb81a777f24e"
