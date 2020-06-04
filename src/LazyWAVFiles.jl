@@ -86,7 +86,7 @@ function DistributedWAVFile(wavpaths::Vector{String})
     isempty(wavpaths) && error("Found no wav paths.")
     files = LazyWAVFile.(wavpaths)
     fs0 = files[1].fs
-    all(x->x.fs==fs0, files) || error("WAV files in $folder have different sample rates.")
+    all(x->x.fs==fs0, files) || error("WAV files have different sample rates.")
     DistributedWAVFile(files, fs0)
 end
 function DistributedWAVFile(folder::String)
