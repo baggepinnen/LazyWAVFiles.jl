@@ -82,13 +82,11 @@ struct DistributedWAVFile{T,N,L,FS} <: AbstractArray{T,N}
     blockarray::L
     fs::FS
 end
-function LazyWAVFiles.DistributedWAVFile(wavpaths::Vector{String})
+function DistributedWAVFile(wavpaths::Vector{String})
     isempty(wavpaths) && error("Found no wav paths.")
     files = LazyWAVFile.(wavpaths)
     fs0 = files[1].fs
-    if !all(x->x.fs==fs0, files)
-        error("WAV files in $folder have different sample rates.")
-    end
+    all(x->x.fs==fs0, files) || error("WAV files in $folder have different sample rates.")
     DistributedWAVFile(files, fs0)
 end
 function DistributedWAVFile(folder::String)

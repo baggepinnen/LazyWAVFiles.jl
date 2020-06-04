@@ -138,9 +138,9 @@ using Test, LazyWAVFiles, WAV, BenchmarkTools
         WAV.wavwrite(b, joinpath(d2,"fs800.wav"), Fs=800)
 
         wavpaths = vcat(joinpath.(d1, readdir(d1)), joinpath.(d2, readdir(d2)))
-         df = DistributedWAVFile(wavpaths)
-         @test df[1:10] == a
-         @test df[11:end] == b
+        df = DistributedWAVFile(wavpaths)
+        @test df[1:10] == a
+        @test df[11:end] == b
     end
 
 
