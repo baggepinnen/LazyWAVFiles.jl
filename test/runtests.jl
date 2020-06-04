@@ -131,6 +131,16 @@ using Test, LazyWAVFiles, WAV, BenchmarkTools
         WAV.wavwrite(a, joinpath(d,"fs800.wav"), Fs=800)
         WAV.wavwrite(a, joinpath(d,"fs8000.wav"), Fs=8000)
         @test_throws ErrorException DistributedWAVFile(d)
+
+        d1 = mktempdir()
+        WAV.wavwrite(a, joinpath(d1,"fs800.wav"), Fs=800)
+        d2 = mktempdir()
+        WAV.wavwrite(b, joinpath(d2,"fs800.wav"), Fs=800)
+
+        wavpaths = vcat(joinpath.(d1, readdir(d1)), joinpath.(d2, readdir(d2)))
+        df = DistributedWAVFile(wavpaths)
+        @test df[1:10] == a
+        @test df[11:end] == b
     end
 
 
