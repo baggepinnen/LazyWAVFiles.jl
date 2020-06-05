@@ -76,6 +76,8 @@ Base.eltype(f::LazyWAVFile{T}) where T = T
 Base.ndims(f::LazyWAVFile{T,N}) where {T,N} = N
 Base.show(io::IO, ::MIME"text/plain", f::LazyWAVFile{T,N,S}) where {T,N,S} = println(io, "LazyWAV{$T, $N, $(f.size), fs=$(f.fs)}: ", f.path)
 
+Base.view(f::LazyWAVFile, i...) = f[i...]
+
 
 struct DistributedWAVFile{T,N,L,FS} <: AbstractArray{T,N}
     files::Vector{LazyWAVFile{T,N,FS}}
@@ -156,6 +158,8 @@ function Base.vcat(dfs::DistributedWAVFile...)
     any(x->x.fs != fs, dfs) && error("Distributed WAV files have different sample rates.")
     DistributedWAVFile(reduce(vcat, getfield.(dfs, :files)), fs)
 end
+
+Base.view(df::DistributedWAVFile, i...) = df[i...]
 
 
 end

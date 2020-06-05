@@ -163,11 +163,17 @@ using Test, LazyWAVFiles, WAV, BenchmarkTools
         indices1 = 1:96000
         t = @belapsed $dfile[$indices1] evals=3 samples=3
         @test t < 0.1
+        t = @belapsed @view($dfile[$indices1]) evals=3 samples=3
+        @test t < 0.1
         indices2 = 96000:96000*2
         t = @belapsed $dfile[$indices2] evals=3 samples=3
         @test t < 0.1
+        t = @belapsed @view($dfile[$indices2]) evals=3 samples=3
+        @test t < 0.1
         indices3 = 96000*10:96000*11
         t = @belapsed $dfile[$indices3] evals=3 samples=3
+        @test t < 0.1
+        t = @belapsed @view($dfile[$indices3]) evals=3 samples=3
         @test t < 0.1
 
         filepath = joinpath(path, "test1.wav")
@@ -176,11 +182,17 @@ using Test, LazyWAVFiles, WAV, BenchmarkTools
         indices1 = 1:96000
         t = @belapsed $lfile[$indices1] evals=3 samples=3
         @test t < 0.01
+        t = @belapsed @view($lfile[$indices1]) evals=3 samples=3
+        @test t < 0.01
         indices2 = 96000:96000*2
         t = @belapsed $lfile[$indices2] evals=3 samples=3
         @test t < 0.01
+        t = @belapsed @view($lfile[$indices2]) evals=3 samples=3
+        @test t < 0.01
         indices3 = 96000*10:96000*11
         t = @belapsed $lfile[$indices3] evals=3 samples=3
+        @test t < 0.01
+        t = @belapsed @view($lfile[$indices3]) evals=3 samples=3
         @test t < 0.01
 
     end
