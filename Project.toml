@@ -1,14 +1,14 @@
 name = "LazyWAVFiles"
 uuid = "82ba68a1-f779-4cc2-8f94-53af9af8d852"
 authors = ["Fredrik Bagge Carlson <baggepinnen@gmail.com>"]
-version = "2.0.0"
+version = "2.0.1"
 
 [deps]
 BlockArrays = "8e7c35d0-a365-5155-bbbb-fb81a777f24e"
 WAV = "8149f6b0-98f6-5db9-b78f-408fbbb8ef88"
 
 [compat]
-BlockArrays = "0.12"
+BlockArrays = "0.12, 0.16"
 WAV = "1.0"
 julia = "1.4"
 
